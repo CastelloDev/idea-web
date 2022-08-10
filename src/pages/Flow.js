@@ -8,6 +8,7 @@ import defaultEdges from "../data/edges.js";
 import { getAllIdeas } from "../services/IdeaService.js";
 import { useEffect, useState } from "react";
 import { createIdeaNode, getNodeEdges } from "../util/general.js";
+import nodeTypes from "../data/nodeTypes.js";
 
 const edgeOptions = {
   animated: true,
@@ -32,6 +33,7 @@ function Flow() {
   return (
     <ReactFlowProvider>
       <ReactFlow
+        nodeTypes={nodeTypes}
         defaultNodes={nodes}
         defaultEdges={edges}
         defaultEdgeOptions={edgeOptions}

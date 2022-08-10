@@ -1,7 +1,8 @@
 export const createIdeaNode = (idea) => {
   return {
     id: idea.id,
-    data: { label: idea.title },
+    type: "idea",
+    data: idea,
     position: {
       x: Math.random() * 500,
       y: Math.random() * 500,
