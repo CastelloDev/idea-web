@@ -18,7 +18,7 @@ export const getAllIdeas = async () => {
 
 export const createIdea = async (idea) => {
   const client = getAxiosClient();
-  const input = JSON.stringify(idea).replace(/"([^"]+)":/g, '$1:');
+  const input = JSON.stringify(idea).replace(/"([^"]+)":/g, "$1:");
   const query = `mutation {
     addIdea(input: [${input}]) {
       idea {
@@ -29,8 +29,6 @@ export const createIdea = async (idea) => {
       }
     }
   }`;
-  console.log(query)
   const res = await client.post("", query);
-  console.log(res)
   return res.data.data.addIdea;
 };
