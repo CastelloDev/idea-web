@@ -3,13 +3,9 @@ import ReactFlow, {
   Controls,
   ReactFlowProvider,
 } from "react-flow-renderer";
-import defaultNodes from "../data/nodes.js";
-import defaultEdges from "../data/edges.js";
-import { getAllIdeas } from "../services/IdeaService.js";
-import { useEffect, useState } from "react";
-import { createIdeaNode, getNodeEdges } from "../util/general.js";
+import { useCallback, useEffect } from "react";
 import nodeTypes from "../data/nodeTypes.js";
-import dagre from "dagre";
+import { useBoundStore } from "../store/useBoundStore.js";
 
 const edgeOptions = {
   animated: true,
@@ -20,57 +16,24 @@ const edgeOptions = {
 
 const connectionLineStyle = { stroke: "black" };
 
-function getDagreNodeEdges(nodes, edges) {
-  const dagreGraph = new dagre.graphlib.Graph();
-  dagreGraph.setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph({ rankdir: "TB" });
-  const nodeWidth = 240;
-  const nodeHeight = 140;
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  dagre.layout(dagreGraph);
-
-  nodes.forEach((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    node.targetPosition = "top";
-    node.sourcePosition = "bottom";
-
-    node.position = {
-      x: nodeWithPosition.x - nodeWidth / 2,
-      y: nodeWithPosition.y - nodeHeight / 2,
-    };
-  });
-
-  return { nodes, edges };
-}
-
 function Flow() {
-  const [nodes, setNodes] = useState(defaultNodes);
-  const [edges, setEdges] = useState(defaultEdges);
+  const nodes = useBoundStore((state) => state.nodes);
+  const edges = useBoundStore((state) => state.edges);
+  const getAllIdeas = useBoundStore((state) => state.getAllIdeas);
+  const createEdge = useBoundStore((state) => state.createEdge);
 
   useEffect(() => {
-    getAllIdeas().then((ideas) => {
-      const _nodes = ideas.map((idea) => createIdeaNode(idea));
-      const _edges = getNodeEdges(ideas);
+    getAllIdeas();
+  }, [getAllIdeas]);
 
-      // Without dagre
-      // setNodes(_nodes);
-      // setEdges(_edges);
-
-      const { nodes: dagreNodes, edges: dagreEdges } = getDagreNodeEdges(
-        _nodes,
-        _edges
-      );
-      setNodes(dagreNodes);
-      setEdges(dagreEdges);
-    });
-  }, []);
+  const onConnect = useCallback(
+    (params) => createEdge(params.source, params.target),
+    [createEdge]
+  );
+  const onEdgeUpdate = useCallback(
+    (oldEdge, newConnection) => console.log(oldEdge, newConnection),
+    []
+  );
 
   return (
     <ReactFlowProvider>
@@ -79,8 +42,10 @@ function Flow() {
         defaultNodes={nodes}
         defaultEdges={edges}
         defaultEdgeOptions={edgeOptions}
-        fitView
+        onConnect={onConnect}
+        onEdgeUpdate={onEdgeUpdate}
         connectionLineStyle={connectionLineStyle}
+        fitView
       />
       <Background />
       <Controls />
