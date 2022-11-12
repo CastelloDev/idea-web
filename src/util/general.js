@@ -3,7 +3,7 @@ export const createIdeaNode = (idea) => {
     id: idea.id,
     type: "idea",
     data: idea,
-    position: {
+    position: idea.position || {
       x: Math.random() * 500,
       y: Math.random() * 500,
     },

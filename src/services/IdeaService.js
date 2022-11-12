@@ -7,6 +7,10 @@ export const getAllIdeas = async () => {
           id
           title
           description
+          position {
+            x
+            y
+          }
           ideas {
             id
           }
@@ -31,6 +35,22 @@ export const createIdea = async (idea) => {
   }`;
   const res = await client.post("", query);
   return res.data.data.addIdea;
+};
+export const updateIdeaPosition = async (idea) => {
+  const client = getAxiosClient();
+  const input = JSON.stringify(idea.position).replace(/"([^"]+)":/g, "$1:");
+  const query = `
+  mutation {
+    updateIdea(input: {
+      filter: { id: "${idea.id}"},
+      set: { position: ${input} }
+    }) {
+      numUids
+    }
+  }
+  `;
+  const res = await client.post("", query);
+  return res.data.data.updateIdea;
 };
 
 export const createEdge = async (sourceNodeId, targetNodeId) => {

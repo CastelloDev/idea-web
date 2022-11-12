@@ -21,6 +21,7 @@ function Flow() {
   const edges = useBoundStore((state) => state.edges);
   const getAllIdeas = useBoundStore((state) => state.getAllIdeas);
   const createEdge = useBoundStore((state) => state.createEdge);
+  const updateIdeaPosition = useBoundStore((state) => state.updateIdeaPosition);
 
   useEffect(() => {
     getAllIdeas();
@@ -34,6 +35,12 @@ function Flow() {
     (oldEdge, newConnection) => console.log(oldEdge, newConnection),
     []
   );
+  const onNodeDragStop = useCallback(
+    (event, node, nodes) => {
+      updateIdeaPosition(node);
+    },
+    [updateIdeaPosition]
+  );
 
   return (
     <ReactFlowProvider>
@@ -43,9 +50,9 @@ function Flow() {
         defaultEdges={edges}
         defaultEdgeOptions={edgeOptions}
         onConnect={onConnect}
+        onNodeDragStop={onNodeDragStop}
         onEdgeUpdate={onEdgeUpdate}
         connectionLineStyle={connectionLineStyle}
-        fitView
       />
       <Background />
       <Controls />

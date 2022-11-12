@@ -1,5 +1,9 @@
 import create from "zustand";
-import { createEdge, getAllIdeas } from "../services/IdeaService";
+import {
+  createEdge,
+  getAllIdeas,
+  updateIdeaPosition,
+} from "../services/IdeaService";
 import { createIdeaNode, getNodeEdges } from "../util/general";
 
 export const useBoundStore = create((set, get) => ({
@@ -15,6 +19,11 @@ export const useBoundStore = create((set, get) => ({
   createEdge: async (sourceNodeId, targetNodeId) => {
     await createEdge(sourceNodeId, targetNodeId);
 
+    const { getAllIdeas } = get();
+    await getAllIdeas();
+  },
+  updateIdeaPosition: async (node) => {
+    await updateIdeaPosition(node);
     const { getAllIdeas } = get();
     await getAllIdeas();
   },
